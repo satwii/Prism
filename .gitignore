@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+.venv-1/
+.venv-2/
+
+# Environment files
+.env
+.env.*
+
+# Local database and secrets
+*.db
+*.sqlite3
+serviceAccountKey.json
+
+# Node
+node_modules/
+dist/
+
+# OS / editor
+.DS_Store
+.vscode/
+
+# Training artifacts and large generated outputs
+*.log
+*.json
+*.pt
+*.bin
+*.safetensors
+*.csv
+*.docx
+*.ipynb
+production_chat_model/
+production1_chat_model/

@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+transformers
+torch
+chromadb
+cryptography
+firebase-admin
+python-jose[cryptography]
+python-multipart
+websockets
+python-Levenshtein
+pydantic
