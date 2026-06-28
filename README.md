@@ -13,15 +13,40 @@ This project was developed as part of an NLP for Social Engineering study and is
 - Includes organization registration and verified-organization workflows
 - Provides an administration dashboard for reviewing reports, managing organizations, and inspecting vector database insights
 
-## Presentation highlights
+## Methodology
 
-The project is grounded in a social-engineering NLP problem statement focused on identifying fraudulent psychological intent in real-time messaging.
+This section summarizes the research and engineering methodology used to build Prism. The implementation mirrors the pipeline and components used during our study on detecting social-engineering intent in messaging.
 
-![Project title slide](docs/screenshots/page_1.png)
+1. Data & Labels
+	- Collected chat-style message corpora and supplemented with phishing/scam examples and benign conversational data.
+	- Labeled messages across intent categories used in the model: `SAFE`, `AUTHORITY`, `URGENCY_SCARCITY`, `PERSUASION`, `PREDATORY_GROOMING`.
 
-![Problem statement](docs/screenshots/page_2.png)
+2. Model training
+	- A distilled BERT-based classifier (4-layer DistilBERT variant) was fine-tuned on the labeled dataset to predict the intent class and provide class probabilities.
+	- Training used standard tokenization and truncation to 512 tokens with cross-entropy loss and softmax outputs.
 
-![Research problem](docs/screenshots/page_3.png)
+3. Multi-step inference pipeline (runtime)
+	- Decryption: Client-side encrypted messages are decrypted server-side when a session key exists (Fernet).
+	- Signature verification: Optional RSA signature verification ensures message integrity when present.
+	- URL & domain scanning: Extracted URLs are checked against an admin-maintained blocklist and lookalike detection (Levenshtein distance against known brands).
+	- Sus-buffer context: Recent chat messages are kept in a short FIFO buffer for multi-turn analysis to detect patterns across multiple messages.
+	- Vector similarity: DistilBERT [CLS] embeddings are checked against a ChromaDB vector store of confirmed scam vectors to catch paraphrased or semantically-similar scams.
+	- DistilBERT inference: The classifier returns the predicted class, confidence, and SAFE probability. Thresholds determine whether a message is flagged for UI blocking or admin review.
+
+4. Admin review & feedback loop
+	- Users can report suspicious messages which admins review; confirmed scams are vectorized into ChromaDB to improve future detection.
+	- Admin actions are logged and used to expand blocklists and vector metadata.
+
+5. Deployment & runtime
+	- The backend is a FastAPI app that loads the model at startup, initializes ChromaDB and the AI pipeline, and serves a React frontend.
+
+## Screenshots (UI)
+
+Replace the images in `docs/screenshots/` with the provided UI screenshots. The README references the two UI images below — they will render once the PNG files are placed in the folder with these names:
+
+![Prism home dashboard](docs/screenshots/ui_home.png)
+
+![Chat with detected threat](docs/screenshots/ui_chat_alert.png)
 
 ## System architecture
 
